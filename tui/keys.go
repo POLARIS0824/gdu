@@ -88,6 +88,11 @@ func (ui *UI) handleClosingModals(key *tcell.EventKey) *tcell.EventKey {
 			ui.app.SetFocus(ui.table)
 			return nil
 		}
+		if ui.pages.HasPage("ai-result") {
+			ui.pages.RemovePage("ai-result")
+			ui.app.SetFocus(ui.table)
+			return nil
+		}
 	}
 	return key
 }
@@ -317,6 +322,21 @@ func (ui *UI) handleMainActions(key *tcell.EventKey) *tcell.EventKey {
 		return nil
 	case 'I':
 		ui.ignoreItem()
+	case 'A':
+		if ui.currentDir == nil {
+			return key
+		}
+		if ui.isInArchive() {
+			ui.showErr("AI analysis is not supported in archives", nil)
+			return nil
+		}
+		row, column := ui.table.GetSelection()
+		selectedItem, ok := ui.table.GetCell(row, column).GetReference().(fs.Item)
+		if !ok || selectedItem == ui.currentDir.GetParent() {
+			return key
+		}
+		ui.showAIAnalysis(selectedItem)
+		return key
 	}
 	return key
 }

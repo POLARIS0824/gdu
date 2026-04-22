@@ -95,6 +95,9 @@ type UI struct {
 	browseParentDirs        bool
 	showDiskProgressBar     bool
 	currentDeviceSize       int64
+	aiApiKey                string
+	aiBaseURL               string
+	aiModel                 string
 }
 
 type deleteQueueItem struct {
@@ -365,6 +368,21 @@ func (ui *UI) SetCollapsePath(value bool) {
 // SetShowDiskProgressBar sets whether to show a progress bar when scanning a whole disk
 func (ui *UI) SetShowDiskProgressBar(value bool) {
 	ui.showDiskProgressBar = value
+}
+
+// SetAiApiKey sets the AI API key
+func (ui *UI) SetAiApiKey(key string) {
+	ui.aiApiKey = key
+}
+
+// SetAiBaseURL sets the AI API base URL
+func (ui *UI) SetAiBaseURL(url string) {
+	ui.aiBaseURL = url
+}
+
+// SetAiModel sets the AI model name
+func (ui *UI) SetAiModel(model string) {
+	ui.aiModel = model
 }
 
 // SetDeleteInBackground sets the flag to delete files in background

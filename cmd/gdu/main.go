@@ -199,6 +199,19 @@ func runE(command *cobra.Command, args []string) error {
 		af.LogFile = "nul"
 	}
 
+	if af.AiApiKey == "" {
+		af.AiApiKey = os.Getenv("GDU_AI_API_KEY")
+	}
+	if af.AiBaseURL == "" {
+		af.AiBaseURL = os.Getenv("GDU_AI_BASE_URL")
+	}
+	if af.AiModel == "" {
+		af.AiModel = os.Getenv("GDU_AI_MODEL")
+	}
+	if af.AiModel == "" {
+		af.AiModel = "gpt-4o-mini"
+	}
+
 	var f *os.File
 	if af.LogFile == "-" {
 		f = os.Stdout

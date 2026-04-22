@@ -103,6 +103,9 @@ type Flags struct {
 	ArchiveBrowsing    bool     `yaml:"archive-browsing"`
 	CollapsePath       bool     `yaml:"collapse-path"`
 	BrowseParentDirs   bool     `yaml:"browse-parent-dirs"`
+	AiApiKey           string   `yaml:"-"`
+	AiBaseURL          string   `yaml:"-"`
+	AiModel            string   `yaml:"-"`
 }
 
 // ShouldRunInNonInteractiveMode checks if the application should run in non-interactive mode
@@ -545,6 +548,21 @@ func (a *App) getOptions() []tui.Option {
 	opts = append(opts, func(ui *tui.UI) {
 		ui.SetShowDiskProgressBar(a.Flags.Style.ProgressModal.ShowDiskProgressBar)
 	})
+	if a.Flags.AiApiKey != "" {
+		opts = append(opts, func(ui *tui.UI) {
+			ui.SetAiApiKey(a.Flags.AiApiKey)
+		})
+	}
+	if a.Flags.AiBaseURL != "" {
+		opts = append(opts, func(ui *tui.UI) {
+			ui.SetAiBaseURL(a.Flags.AiBaseURL)
+		})
+	}
+	if a.Flags.AiModel != "" {
+		opts = append(opts, func(ui *tui.UI) {
+			ui.SetAiModel(a.Flags.AiModel)
+		})
+	}
 	return opts
 }
 
