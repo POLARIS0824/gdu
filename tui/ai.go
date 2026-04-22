@@ -5,9 +5,11 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"regexp"
 	"strings"
 	"time"
 
+	"github.com/charmbracelet/glamour"
 	"github.com/rivo/tview"
 
 	"github.com/dundee/gdu/v5/pkg/fs"
@@ -74,7 +76,7 @@ func (ui *UI) buildAIPrompt(item fs.Item) string {
 		}
 	}
 
-	b.WriteString("\n请分析这个路径的用途，并判断是否可以安全删除。如果删除有风险，请说明原因。回答请使用中文。")
+	b.WriteString("\n请分析这个路径的用途，并判断是否可以安全删除。如果删除有风险，请说明原因。回答请使用中文，可以使用 Markdown 格式（如标题、列表、粗体等）以便更好地组织内容。")
 
 	return b.String()
 }
@@ -150,10 +152,28 @@ func (ui *UI) callAI(prompt string) (string, error) {
 	return respData.Choices[0].Message.Content, nil
 }
 
+func renderMarkdownToPlain(input string) (string, error) {
+	r, err := glamour.NewTermRenderer(glamour.WithWordWrap(76))
+	if err != nil {
+		return "", fmt.Errorf("creating glamour renderer: %w", err)
+	}
+	out, err := r.Render(input)
+	if err != nil {
+		return "", fmt.Errorf("rendering markdown: %w", err)
+	}
+	ansiEscape := regexp.MustCompile(`\x1b(?:[@-Z\-_]|\[[0-?]*[ -/]*[@-~])`)
+	return ansiEscape.ReplaceAllString(out, ""), nil
+}
+
 func (ui *UI) showAIResult(result string) {
+	plain, err := renderMarkdownToPlain(result)
+	if err != nil {
+		ui.showErr("Failed to render AI result", err)
+		return
+	}
+
 	text := tview.NewTextView().
-		SetDynamicColors(true).
-		SetText(result).
+		SetText(plain).
 		SetScrollable(true)
 	text.SetBorder(true).SetTitle(" AI Analysis Result ")
 
